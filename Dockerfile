@@ -6,18 +6,18 @@ RUN apt-get update && \
     net-tools \
     dante-server \
     procps \
-    sudo \
-    && \
-    apt-get clean && \
+    sudo 
+	
+RUN apt-get install dnsutils -y
+RUN apt-get install inetutils-ping -y
+RUN apt-get install iputils-ping -y
+RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+#COPY ./theme /root/.bash_theme
 
-RUN echo 'set completion-ignore-case on' >> ~/.inputrc && \
-    echo "export LS_OPTIONS='--color=auto'" >> ~/.bashrc && \
-    echo "alias ls='ls $LS_OPTIONS'" >> ~/.bashrc && \
-    echo ". ~/.bash_theme" >> ~/.bashrc && \
-    echo 'launch () { openvpn --config "$1" --daemon; sleep 3; danted -D; echo "Started $1"; }' >> ~/.bashrc && \
-    echo "halt () { killall openvpn; killall danted; echo 'Stopped'; }" >> ~/.bashrc && \
-    echo "Done"
+COPY ./danted.conf /etc/danted.conf
+COPY ./commands/start_server.sh /start_server.sh
+COPY ./commands/stop_server.sh /stop_server.sh
 
-COPY ./theme /root/.bash_theme
+ENTRYPOINT [ "sh", "/start_server.sh" ]

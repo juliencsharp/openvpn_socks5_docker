@@ -2,6 +2,9 @@
 
 NAME="openvpn_holder"
 IMAGE="openvpn_holder"
+PORT=9050
+# DNS : OpenDNS Home
+DNS=208.67.222.222
 
 # Start container (if not already started)
 if [ ! "$(docker ps -q -f name=$IMAGE)" ]; then
@@ -12,9 +15,8 @@ if [ ! "$(docker ps -q -f name=$IMAGE)" ]; then
     --privileged \
     --interactive \
     --detach \
-    -p 9050:1080 \
-    --volume "$(pwd)/config:/etc/openvpn" \
-    --volume "$(pwd)/config/danted.conf:/etc/danted.conf" \
+    --dns $DNS \
+    -p $PORT:1080 \
     $IMAGE
 
 fi
@@ -22,4 +24,4 @@ fi
 # Connect to shell
 docker exec -it \
 	$NAME \
-	/bin/bash -c 'cd /etc/openvpn; exec "${SHELL:-sh}"'
+	./bin/bash -c 'cd /etc/openvpn; exec "${SHELL:-sh}"'
